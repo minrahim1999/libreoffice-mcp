@@ -1,0 +1,43 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "libreoffice-mcp"
+version = "0.1.0"
+description = "MCP server for LibreOffice automation — presentations, documents, spreadsheets"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "Muhaimin", email = "muhaimin@example.com"},
+]
+keywords = ["mcp", "libreoffice", "automation", "presentation", "pptx"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "mcp>=1.0.0",
+    "python-pptx>=1.0.0",
+    "openpyxl>=3.1.0",
+    "python-docx>=1.1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "ruff>=0.1.0",
+]
+
+[project.scripts]
+libreoffice-mcp = "libreoffice_mcp.server:main"
+
+[project.urls]
+Homepage = "https://github.com/muhaimin/libreoffice-mcp"
+Repository = "https://github.com/muhaimin/libreoffice-mcp"
