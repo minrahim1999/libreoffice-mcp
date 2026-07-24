@@ -64,18 +64,16 @@ sudo dnf install libreoffice
 
 ## Installation
 
-### Option A: pip (editable dev install)
+### Option A: pip
 
 ```bash
-cd ~/Documents/01-Projects/libreoffice-mcp
-pip install -e .
+pip install libreoffice-mcp
 ```
 
-### Option B: uv (recommended)
+### Option B: uv
 
 ```bash
-cd ~/Documents/01-Projects/libreoffice-mcp
-uv pip install -e .
+uv pip install libreoffice-mcp
 ```
 
 This installs the `libreoffice-mcp` CLI entrypoint.
@@ -86,48 +84,49 @@ This installs the `libreoffice-mcp` CLI entrypoint.
 
 ### Claude Code
 
-```bash
-# ~/.claude/mcp.json
-cat > ~/.claude/mcp.json <<'EOF'
+Add to `~/.claude/mcp.json`:
+
+```json
 {
   "mcpServers": {
     "libreoffice": {
-      "command": "/Users/muhaimin/.hermes/hermes-agent/venv/bin/libreoffice-mcp"
+      "command": "libreoffice-mcp"
     }
   }
 }
-EOF
 ```
+
+If `libreoffice-mcp` is not on your PATH, use the full path to the binary (e.g. `~/.local/bin/libreoffice-mcp` or your venv path).
 
 Restart Claude Code with `Ctrl+Shift+P` → "Restart Claude Code Server".
 
-### OpenCode (`~/.config/opencode/opencode.jsonc`)
+### OpenCode
 
-Add under `mcpServers`:
+Add under `mcpServers` in `~/.config/opencode/opencode.jsonc`:
 
 ```jsonc
     "libreoffice": {
       "type": "local",
-      "command": [
-        "/Users/muhaimin/.hermes/hermes-agent/venv/bin/libreoffice-mcp"
-      ],
+      "command": ["libreoffice-mcp"],
       "enabled": true
     }
 ```
 
+Use the full binary path if it's not on your PATH.
+
 Restart OpenCode.
 
-### Hermes Agent (`~/.hermes/config.yaml`)
+### Hermes Agent
 
-Add under `mcp_servers`:
+Add under `mcp_servers` in `~/.hermes/config.yaml`:
 
 ```yaml
   libreoffice:
-    command: /Users/muhaimin/.hermes/hermes-agent/venv/bin/libreoffice-mcp
+    command: libreoffice-mcp
     enabled: true
 ```
 
-Restart Hermes.
+Use the full binary path if needed.
 
 ---
 
