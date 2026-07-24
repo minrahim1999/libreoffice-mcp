@@ -190,3 +190,15 @@ On macOS, Homebrew sometimes links it as `/opt/homebrew/bin/soffice`. Ensure you
 ## License
 
 MIT
+
+## Template Tools (Human-Grade Output)
+
+For professional, styled output without manual formatting:
+
+| Tool | Description | Best For |
+|------|-------------|----------|
+| `template_executive_presentation` | 5-slide corporate deck with hero, metrics, financials, roadmap | Board decks, quarterly reviews |
+| `template_proposal_document` | Multi-page doc with title page, sections, budget table | Client proposals, SOWs |
+| `template_financial_spreadsheet` | Styled Excel with formulas, margins, embedded chart | Monthly/quarterly reports |
+
+These templates produce **navy/orange color scheme**, **16:9 widescreen**, and **professional typography** — no manual tweaking needed.

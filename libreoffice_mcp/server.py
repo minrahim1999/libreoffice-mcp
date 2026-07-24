@@ -39,6 +39,7 @@ from libreoffice_mcp.spreadsheet import (
     set_cell_value,
     add_chart,
 )
+from libreoffice_mcp.templates import TEMPLATES
 from libreoffice_mcp.utils import resolve_path
 
 # ── server ──────────────────────────────────────────────────────────────────
@@ -302,6 +303,106 @@ TOOLS: list[Tool] = [
             "required": ["file_path", "sheet_title", "data_range", "title"],
         },
     ),
+    # Templates -----------------------------------------------------------
+    Tool(
+        name="template_executive_presentation",
+        description="Create a professionally designed executive summary presentation (pptx) with hero slide, metrics, financial table, roadmap timeline, and thank-you slide. Provide structured data and get a polished deck.",
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "output_path": {
+                    "type": "string",
+                    "description": "Path to save the .pptx. Defaults to /tmp/executive_summary.pptx",
+                },
+                "title": {"type": "string", "description": "Presentation title."},
+                "subtitle": {"type": "string"},
+                "presenter": {"type": "string"},
+                "date": {"type": "string"},
+                "metrics": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "label": {"type": "string"},
+                            "value": {"type": "string"},
+                            "description": {"type": "string"},
+                        },
+                    },
+                    "description": "Up to 3 key metrics for the summary slide.",
+                },
+                "financials": {
+                    "type": "object",
+                    "properties": {
+                        "headers": {"type": "array", "items": {"type": "string"}},
+                        "rows": {"type": "array", "items": {"type": "array", "items": {"type": "string"}}},
+                    },
+                    "description": "Table data for financial projections slide.",
+                },
+                "roadmap": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "phase": {"type": "string"},
+                            "quarter": {"type": "string"},
+                            "details": {"type": "string"},
+                        },
+                    },
+                    "description": "Up to 3 roadmap phases for timeline slide.",
+                },
+            },
+            "required": ["output_path"],
+        },
+    ),
+    Tool(
+        name="template_proposal_document",
+        description="Create a professionally formatted project proposal document (docx) with title page, executive summary, sections, and budget table.",
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "output_path": {"type": "string"},
+                "title": {"type": "string"},
+                "client": {"type": "string"},
+                "author": {"type": "string"},
+                "date": {"type": "string"},
+                "summary": {"type": "string", "description": "Executive summary text."},
+                "sections": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "heading": {"type": "string"},
+                            "paragraphs": {"type": "array", "items": {"type": "string"}},
+                        },
+                    },
+                },
+                "budget_table": {
+                    "type": "object",
+                    "properties": {
+                        "headers": {"type": "array", "items": {"type": "string"}},
+                        "rows": {"type": "array", "items": {"type": "array", "items": {"type": "string"}}},
+                    },
+                },
+            },
+            "required": ["output_path"],
+        },
+    ),
+    Tool(
+        name="template_financial_spreadsheet",
+        description="Create a professional financial report spreadsheet (xlsx) with styled headers, formulas, and embedded chart.",
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "output_path": {"type": "string"},
+                "title": {"type": "string"},
+                "months": {"type": "array", "items": {"type": "string"}},
+                "revenue": {"type": "array", "items": {"type": "number"}},
+                "expenses": {"type": "array", "items": {"type": "number"}},
+                "profit": {"type": "array", "items": {"type": "number"}},
+            },
+            "required": ["output_path", "title", "months", "revenue", "expenses", "profit"],
+        },
+    ),
 ]
 
 # ── handlers ─────────────────────────────────────────────────────────────
@@ -439,6 +540,48 @@ async def _dispatch(name: str, args: dict[str, Any]) -> str:
         position = args.get("position", "F2")
         add_chart(path, sheet, chart_type, data_range, title, position)
         return json.dumps({"chart": title, "type": chart_type})
+
+    if name == "template_executive_presentation":
+        path = resolve_path(args.get("output_path", "/tmp/executive_summary.pptx"))
+        data = {
+            "title": args.get("title", "Executive Summary"),
+            "subtitle": args.get("subtitle", ""),
+            "presenter": args.get("presenter", ""),
+            "date": args.get("date", ""),
+            "metrics": args.get("metrics", []),
+            "financials": args.get("financials"),
+            "roadmap": args.get("roadmap", []),
+        }
+        TEMPLATES["executive_summary_presentation"](path, data)
+        return json.dumps({"created": str(path), "template": "executive_summary_presentation"})
+
+    if name == "template_proposal_document":
+        path = resolve_path(args.get("output_path", "/tmp/proposal.docx"))
+        data = {
+            "title": args.get("title", "Project Proposal"),
+            "client": args.get("client", ""),
+            "author": args.get("author", ""),
+            "date": args.get("date", ""),
+            "summary": args.get("summary", ""),
+            "sections": args.get("sections", []),
+            "budget_table": args.get("budget_table"),
+        }
+        TEMPLATES["project_proposal_document"](path, data)
+        return json.dumps({"created": str(path), "template": "project_proposal_document"})
+
+    if name == "template_financial_spreadsheet":
+        path = resolve_path(args.get("output_path", "/tmp/financial_report.xlsx"))
+        TEMPLATES["financial_report_spreadsheet"](
+            path,
+            {
+                "title": args.get("title", "Financial Report"),
+                "months": args.get("months", []),
+                "revenue": args.get("revenue", []),
+                "expenses": args.get("expenses", []),
+                "profit": args.get("profit", []),
+            }
+        )
+        return json.dumps({"created": str(path), "template": "financial_report_spreadsheet"})
 
     return json.dumps({"error": f"Unknown tool: {name}"})
 
